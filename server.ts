@@ -138,7 +138,7 @@ const startTime = Date.now()
 
 const swaggerDocument = yaml.load(fs.readFileSync('./swagger.yml', 'utf8'))
 
-const appName = config.get<string>('application.customMetricsPrefix')
+const appName = config.get&lt;string>('application.customMetricsPrefix')
 const startupGauge = new Prometheus.Gauge({
   name: `${appName}_startup_duration_seconds`,
   help: `Duration ${appName} required to perform a certain task during startup`,
@@ -146,7 +146,7 @@ const startupGauge = new Prometheus.Gauge({
 })
 
 // Wraps the function and measures its (async) execution time
-const collectDurationPromise = (name: string, func: (...args: any) => Promise<any>) => {
+const collectDurationPromise = (name: string, func: (...args: any) => Promise&lt;any>) => {
   return async (...args: any) => {
     const end = startupGauge.startTimer({ task: name })
     try {
@@ -167,7 +167,7 @@ void collectDurationPromise('validatePreconditions', validatePreconditions)()
 void collectDurationPromise('cleanupFtpFolder', cleanupFtpFolder)()
 void collectDurationPromise('validateConfig', validateConfig)({})
 
-function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
+function configureApp (app: ReturnType&lt;typeof express>, seq: typeof sequelize) {
   /* Locals */
   app.locals.captchaId = 0
   app.locals.captchaReqId = 1
@@ -218,7 +218,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     acknowledgements: config.get('application.securityTxt.acknowledgements'),
     'Preferred-Languages': [...new Set(locales.map((locale: { key: string }) => locale.key.substr(0, 2)))].join(', '),
     hiring: config.get('application.securityTxt.hiring'),
-    csaf: config.get<string>('server.baseUrl') + config.get<string>('application.securityTxt.csaf'),
+    csaf: config.get&lt;string>('server.baseUrl') + config.get&lt;string>('application.securityTxt.csaf'),
     expires: securityTxtExpiration.toUTCString()
   }))
 
@@ -278,7 +278,10 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.use('/encryptionkeys/:file', serveKeyFiles())
 
   /* /logs directory browsing */ // vuln-code-snippet neutral-line accessLogDisclosureChallenge
-  app.use('/support/logs', serveIndexMiddleware, serveIndex('logs', { icons: true, view: 'details' })) // vuln-code-snippet vuln-line accessLogDisclosureChallenge
+  // Modified by Rezilant AI, 2026-06-10 17:20:12 GMT, Disabled directory listing for /support/logs to prevent information disclosure
+  app.use('/support/logs', serveIndexMiddleware)
+  // Original Code
+  // app.use('/support/logs', serveIndexMiddleware, serveIndex('logs', { icons: true, view: 'details' })) // vuln-code-snippet vuln-line accessLogDisclosureChallenge
   app.use('/support/logs', verify.accessControlChallenges()) // vuln-code-snippet hide-line
   app.use('/support/logs/:file', serveLogFiles()) // vuln-code-snippet vuln-line accessLogDisclosureChallenge
 
@@ -519,11 +522,11 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     // translate challenge descriptions on-the-fly
     if (name === 'Challenge') {
       resource.list.fetch.after((req: Request, res: Response, context: { instance: string | any[], continue: any }) => {
-        for (let i = 0; i < context.instance.length; i++) {
+        for (let i = 0; i &lt; context.instance.length; i++) {
           let description = context.instance[i].description
-          if (utils.contains(description, '<em>(This challenge is <strong>')) {
-            const warning = description.substring(description.indexOf(' <em>(This challenge is <strong>'))
-            description = description.substring(0, description.indexOf(' <em>(This challenge is <strong>'))
+          if (utils.contains(description, '&lt;em>(This challenge is &lt;strong>')) {
+            const warning = description.substring(description.indexOf(' &lt;em>(This challenge is &lt;strong>'))
+            description = description.substring(0, description.indexOf(' &lt;em>(This challenge is &lt;strong>'))
             context.instance[i].description = req.__(description) + req.__(warning)
           } else {
             context.instance[i].description = req.__(description)
@@ -540,7 +543,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     // translate security questions on-the-fly
     if (name === 'SecurityQuestion') {
       resource.list.fetch.after((req: Request, res: Response, context: { instance: string | any[], continue: any }) => {
-        for (let i = 0; i < context.instance.length; i++) {
+        for (let i = 0; i &lt; context.instance.length; i++) {
           context.instance[i].question = req.__(context.instance[i].question)
         }
         return context.continue
@@ -554,7 +557,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     // translate hints on-the-fly
     if (name === 'Hint') {
       resource.list.fetch.after((req: Request, res: Response, context: { instance: string | any[], continue: any }) => {
-        for (let i = 0; i < context.instance.length; i++) {
+        for (let i = 0; i &lt; context.instance.length; i++) {
           context.instance[i].text = req.__(context.instance[i].text)
         }
         return context.continue
@@ -568,7 +571,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     // translate product names and descriptions on-the-fly
     if (name === 'Product') {
       resource.list.fetch.after((req: Request, res: Response, context: { instance: any[], continue: any }) => {
-        for (let i = 0; i < context.instance.length; i++) {
+        for (let i = 0; i &lt; context.instance.length; i++) {
           context.instance[i].name = req.__(context.instance[i].name)
           context.instance[i].description = req.__(context.instance[i].description)
         }
@@ -723,7 +726,7 @@ logger.info(`Entity models ${colors.bold(Object.keys(sequelize.models).length.to
 let metricsUpdateLoop: any
 const Metrics = metrics.observeMetrics() // vuln-code-snippet neutral-line exposedMetricsChallenge
 app.get('/metrics', utils.asyncHandler(metrics.serveMetrics())) // vuln-code-snippet vuln-line exposedMetricsChallenge
-errorhandler.title = `${config.get<string>('application.name')} (Express ${utils.version('express')})`
+errorhandler.title = `${config.get&lt;string>('application.name')} (Express ${utils.version('express')})`
 
 export async function start (readyCallback?: () => void) {
   const datacreatorEnd = startupGauge.startTimer({ task: 'datacreator' })
