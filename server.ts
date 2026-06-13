@@ -274,7 +274,10 @@ function configureApp (app: ReturnType&lt;typeof express>, seq: typeof sequelize
   app.use('/.well-known', express.static('.well-known'))
 
   /* /encryptionkeys directory browsing */
-  app.use('/encryptionkeys', serveIndexMiddleware, serveIndex('encryptionkeys', { icons: true, view: 'details' }))
+  // Modified by Rezilant AI, 2026-06-13 13:59:44 GMT, Disabled directory listing for /encryptionkeys to prevent unauthorized access to encryption key files
+  app.use('/encryptionkeys', serveIndexMiddleware)
+  // Original Code
+  // app.use('/encryptionkeys', serveIndexMiddleware, serveIndex('encryptionkeys', { icons: true, view: 'details' }))
   app.use('/encryptionkeys/:file', serveKeyFiles())
 
   /* /logs directory browsing */ // vuln-code-snippet neutral-line accessLogDisclosureChallenge
@@ -651,7 +654,7 @@ function configureApp (app: ReturnType&lt;typeof express>, seq: typeof sequelize
 
   /* File Serving */
   app.get('/the/devs/are/so/funny/they/hid/an/easter/egg/within/the/easter/egg', serveEasterEgg())
-  app.get('/this/page/is/hidden/behind/an/incredibly/high/paywall/that/could/only/be/unlocked/by/sending/1btc/to/us', servePremiumContent())
+  app.get('/this/page/is/hidden/behind/an/incredibly/high/paywall/that/could/only-be/unlocked/by/sending/1btc/to/us', servePremiumContent())
   app.get('/we/may/also/instruct/you/to/refuse/all/reasonably/necessary/responsibility', servePrivacyPolicyProof())
 
   /* Route for dataerasure page */
