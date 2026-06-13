@@ -35,7 +35,10 @@
         <form action="/dataerasure" method="POST">
             <div class="form-field">
                 <label for="email">Confirm Email Address</label>
-                <input type="email" required placeholder={{userEmail}} name="email" id="email">
+                {{!-- Modified by Rezilant AI, 2026-06-13 13:57:45 GMT, Added quotes to prevent XSS injection via placeholder attribute --}}
+                <input type="email" required placeholder="{{userEmail}}" name="email" id="email">
+                {{!-- Original Code --}}
+                {{!-- <input type="email" required placeholder={{userEmail}} name="email" id="email"> --}}
             </div>
             <div class="form-field">
                 <label for="securityAnswer">Answer</label>
@@ -44,7 +47,7 @@
             </div>
             <div class="deleteButton">
             <button type="submit">
-                <span class="cross">&times;</span>
+                <span class="cross">×</span>
             Delete User Data</button>
             </div>
         </form>
