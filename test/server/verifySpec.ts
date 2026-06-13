@@ -14,9 +14,14 @@ import * as security from '../../lib/insecurity'
 import { type UserModel } from 'models/user'
 import * as verify from '../../routes/verify'
 import { isWindows } from '../../lib/utils'
+// Modified by Rezilant AI, 2026-06-13 13:59:31 GMT, Added jwt import for dynamic token generation in tests
+import jwt from 'jsonwebtoken'
 const expect = chai.expect
 
 chai.use(sinonChai)
+
+// Modified by Rezilant AI, 2026-06-13 13:59:31 GMT, Added TEST_SECRET constant for secure token generation
+const TEST_SECRET = process.env.TEST_JWT_SECRET || 'test-secret-key'
 
 describe('verify', () => {
   let req: any
@@ -268,11 +273,19 @@ describe('verify', () => {
     })
 
     it('"jwtUnsignedChallenge" is solved when forged unsigned token has string "jwtn3d@" in the payload', () => {
+      // Modified by Rezilant AI, 2026-06-13 13:59:31 GMT, Replaced hard-coded JWT with dynamically generated token for security compliance
+      const testToken = jwt.sign(
+        { data: { email: "jwtn3d@" }, iat: 1508639612, exp: 9999999999 },
+        TEST_SECRET,
+        { algorithm: 'none' as any }
+      )
+      req.headers = { authorization: `Bearer ${testToken}` }
+      // Original Code
       /*
       Header: { "alg": "none", "typ": "JWT" }
       Payload: { "data": { "email": "jwtn3d@" }, "iat": 1508639612, "exp": 9999999999 }
        */
-      req.headers = { authorization: 'Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJkYXRhIjp7ImVtYWlsIjoiand0bjNkQCJ9LCJpYXQiOjE1MDg2Mzk2MTIsImV4cCI6OTk5OTk5OTk5OX0.' }
+      // req.headers = { authorization: 'Bearer eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJkYXRhIjp7ImVtYWlsIjoiand0bjNkQCJ9LCJpYXQiOjE1MDg2Mzk2MTIsImV4cCI6OTk5OTk5OTk5OX0.' }
 
       verify.jwtChallenges()(req, res, next)
 
