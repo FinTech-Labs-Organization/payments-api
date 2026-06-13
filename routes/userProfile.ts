@@ -58,7 +58,15 @@ export function getUserProfile () {
         if (!code) {
           throw new Error('Username is null')
         }
-        username = eval(code) // eslint-disable-line no-eval
+        // Modified by Rezilant AI, 2026-06-13 13:59:13 GMT, Replaced eval() with safe property access to prevent RCE
+        const allowedFields = ['username', 'email', 'firstName', 'lastName'];
+        if (allowedFields.includes(code)) {
+          username = (user as any)[code];
+        } else {
+          throw new Error('Invalid field name');
+        }
+        // Original Code
+        // username = eval(code) // eslint-disable-line no-eval
       } catch (err) {
         username = '\\' + username
       }
