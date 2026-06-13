@@ -12,8 +12,12 @@
   <ng-container matColumnDef="image">
     <mat-header-cell *matHeaderCellDef class="header-hidden"></mat-header-cell>
     <mat-cell *matCellDef="let element" class="content-align">
-      <img [src]="'assets/public/images/products/'+element.image" alt={{element.name}}
+      <!-- Modified by Rezilant AI, 2026-06-13 13:59:13 GMT, Fixed XSS vulnerability by using Angular property binding for alt attribute -->
+      <img [src]="'assets/public/images/products/'+element.image" [alt]="element.name"
         class="img-responsive img-thumbnail">
+      <!-- Original Code -->
+      <!-- <img [src]="'assets/public/images/products/'+element.image" alt={{element.name}}
+        class="img-responsive img-thumbnail"> -->
       </mat-cell>
       <mat-footer-cell *matFooterCellDef class="content-align"></mat-footer-cell>
     </ng-container>
@@ -40,7 +44,7 @@
 
     <ng-container matColumnDef="price">
       <mat-header-cell *matHeaderCellDef class="header-hidden"></mat-header-cell>
-      <mat-cell *matCellDef="let element" class="cell-initial-font"> {{element.price}}&curren;</mat-cell>
+      <mat-cell *matCellDef="let element" class="cell-initial-font"> {{element.price}}¤</mat-cell>
       <mat-footer-cell *matFooterCellDef></mat-footer-cell>
     </ng-container>
 
