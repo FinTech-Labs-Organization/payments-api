@@ -37,7 +37,19 @@ export function dataExport () {
         }
 
         try {
-          reviews = await db.reviewsCollection.find({ author: email })
+          // Modified by Rezilant AI, 2026-06-25 10:20:02 GMT, Added input validation and sanitization to prevent NoSQL injection using $eq operator
+          // Validate email format before querying
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            throw new Error('Invalid email format');
+          }
+
+          // Use explicit equality operator to prevent injection
+          reviews = await db.reviewsCollection.find({ 
+            author: { $eq: email } 
+          });
+          // Original Code
+          // reviews = await db.reviewsCollection.find({ author: email })
         } catch (error) {
           next(new Error(`Error retrieving reviews for ${updatedEmail}`))
           return
@@ -47,21 +59,21 @@ export function dataExport () {
         {
           username?: string
           email: string
-          orders: Array<{
+          orders: Array&lt;{
             orderId: string
             totalPrice: number
             products: ProductModel[]
             bonus: number
             eta: string
           }>
-          reviews: Array<{
+          reviews: Array&lt;{
             message: string
             author: string
             productId: number
             likesCount: number
             likedBy: string
           }>
-          memories: Array<{
+          memories: Array&lt;{
             imageUrl: string
             caption: string
           }>
