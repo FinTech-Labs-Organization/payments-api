@@ -39,6 +39,13 @@ export function likeProductReviews () {
         return res.status(404).json({ error: 'Not found' })
       }
 
+      // Modified by Rezilant AI, 2026-08-26 17:24:44 GMT, Added regex validation to ensure ID matches MongoDB ObjectId format (24 hex characters)
+      // Validate that id is a valid MongoDB ObjectId format
+      if (!id || !/^[a-f\d]{24}$/i.test(id)) {
+        return res.status(400).json({ error: 'Invalid ID format' });
+      }
+      // Original Code
+      // const likedBy = review.likedBy
       const likedBy = review.likedBy
       if (likedBy.includes(user.data.email)) {
         return res.status(403).json({ error: 'Not allowed' })
